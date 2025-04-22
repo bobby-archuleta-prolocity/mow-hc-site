@@ -1,0 +1,300 @@
+<script type="text/javascript">
+    var gk_fileData = {};
+    function loadFileData(filename) {
+        return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Portal Mockup</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        // Mock data simulating Salesforce NPC objects
+        const mockProfile = {
+            Id: '003xxxxxxxxxxxx',
+            Name: 'Jane Doe',
+            Email: 'jane@example.com',
+            Volunteer_Skills__c: 'Tech,Outreach',
+            Availability__c: 'Weekends'
+        };
+        const mockEvents = [
+            // April 23, 2025
+            { Id: 'route1-0423', Name: 'Route 1', Start_Date__c: '2025-04-23', End_Date__c: '2025-04-23', Status__c: 'Active' },
+            { Id: 'route2-0423', Name: 'Route 2', Start_Date__c: '2025-04-23', End_Date__c: '2025-04-23', Status__c: 'Active' },
+            { Id: 'route3-0423', Name: 'Route 3', Start_Date__c: '2025-04-23', End_Date__c: '2025-04-23', Status__c: 'Active' },
+
+            // April 24, 2025
+            { Id: 'route1-0424', Name: 'Route 1', Start_Date__c: '2025-04-24', End_Date__c: '2025-04-24', Status__c: 'Active' },
+            { Id: 'route2-0424', Name: 'Route 2', Start_Date__c: '2025-04-24', End_Date__c: '2025-04-24', Status__c: 'Active' },
+            { Id: 'route3-0424', Name: 'Route 3', Start_Date__c: '2025-04-24', End_Date__c: '2025-04-24', Status__c: 'Active' },
+
+            // April 25, 2025
+            { Id: 'route1-0425', Name: 'Route 1', Start_Date__c: '2025-04-25', End_Date__c: '2025-04-25', Status__c: 'Active' },
+            { Id: 'route2-0425', Name: 'Route 2', Start_Date__c: '2025-04-25', End_Date__c: '2025-04-25', Status__c: 'Active' },
+            { Id: 'route3-0425', Name: 'Route 3', Start_Date__c: '2025-04-25', End_Date__c: '2025-04-25', Status__c: 'Active' },
+
+            // April 26, 2025
+            { Id: 'route1-0426', Name: 'Route 1', Start_Date__c: '2025-04-26', End_Date__c: '2025-04-26', Status__c: 'Active' },
+            { Id: 'route2-0426', Name: 'Route 2', Start_Date__c: '2025-04-26', End_Date__c: '2025-04-26', Status__c: 'Active' },
+            { Id: 'route3-0426', Name: 'Route 3', Start_Date__c: '2025-04-26', End_Date__c: '2025-04-26', Status__c: 'Active' },
+
+            // April 27, 2025
+            { Id: 'route1-0427', Name: 'Route 1', Start_Date__c: '2025-04-27', End_Date__c: '2025-04-27', Status__c: 'Active' },
+            { Id: 'route2-0427', Name: 'Route 2', Start_Date__c: '2025-04-27', End_Date__c: '2025-04-27', Status__c: 'Active' },
+            { Id: 'route3-0427', Name: 'Route 3', Start_Date__c: '2025-04-27', End_Date__c: '2025-04-27', Status__c: 'Active' },
+
+            // April 28, 2025
+            { Id: 'route1-0428', Name: 'Route 1', Start_Date__c: '2025-04-28', End_Date__c: '2025-04-28', Status__c: 'Active' },
+            { Id: 'route2-0428', Name: 'Route 2', Start_Date__c: '2025-04-28', End_Date__c: '2025-04-28', Status__c: 'Active' },
+            { Id: 'route3-0428', Name: 'Route 3', Start_Date__c: '2025-04-28', End_Date__c: '2025-04-28', Status__c: 'Active' },
+
+            // April 29, 2025
+            { Id: 'route1-0429', Name: 'Route 1', Start_Date__c: '2025-04-29', End_Date__c: '2025-04-29', Status__c: 'Active' },
+            { Id: 'route2-0429', Name: 'Route 2', Start_Date__c: '2025-04-29', End_Date__c: '2025-04-29', Status__c: 'Active' },
+            { Id: 'route3-0429', Name: 'Route 3', Start_Date__c: '2025-04-29', End_Date__c: '2025-04-29', Status__c: 'Active' },
+
+            // April 30, 2025
+            { Id: 'route1-0430', Name: 'Route 1', Start_Date__c: '2025-04-30', End_Date__c: '2025-04-30', Status__c: 'Active' },
+            { Id: 'route2-0430', Name: 'Route 2', Start_Date__c: '2025-04-30', End_Date__c: '2025-04-30', Status__c: 'Active' },
+            { Id: 'route3-0430', Name: 'Route 3', Start_Date__c: '2025-04-30', End_Date__c: '2025-04-30', Status__c: 'Active' },
+        ];
+        const mockEnrollments = [
+            { Id: 'enr001', npcpm__Contact__c: '003xxxxxxxxxxxx', npcpm__Program__c: 'a00xxxxxxxxxxxx', npcpm__Status__c: 'Active', Notes__c: 'Excited to help with tech setup!' }
+        ];
+        // Modal Component
+        function Modal({ isOpen, onClose, event, isRegistered, onRegister, onCancel }) {
+            const [notes, setNotes] = useState(isRegistered ? mockEnrollments.find(enr => enr.npcpm__Program__c === event?.id)?.Notes__c || '' : '');
+            if (!isOpen || !event) return null;
+            const handleRegister = () => {
+                onRegister(event.id, notes);
+                setNotes('');
+            };
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">{event.title}</h3>
+                        <p className="text-sky-900 mb-4">Are you interested in volunteering for this event?</p>
+                        <div className="mb-4">
+                            <label htmlFor="notes" className="block text-sm font-medium text-sky-900">Notes</label>
+                            <textarea
+                                id="notes"
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                rows="4"
+                                placeholder="Add any notes (e.g., preferences, questions)"
+                            ></textarea>
+                        </div>
+                        <div className="flex justify-end space-x-3">
+                            {isRegistered ? (
+                                <button
+                                    onClick={() => onCancel(event.id)}
+                                    className="bg-red-600 text-white font-medium py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                    Cancel Registration
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleRegister}
+                                    className="bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    Register
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="bg-gray-300 text-gray-900 font-medium py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        // Main App Component
+        function VolunteerPortal() {
+            const [profile, setProfile] = useState({
+                name: mockProfile.Name,
+                email: mockProfile.Email,
+                skills: mockProfile.Volunteer_Skills__c.split(','),
+                availability: mockProfile.Availability__c
+            });
+            const [events, setEvents] = useState([]);
+            const [enrollments, setEnrollments] = useState(mockEnrollments);
+            const [modalOpen, setModalOpen] = useState(false);
+            const [selectedEvent, setSelectedEvent] = useState(null);
+            const calendarRef = useRef(null);
+            // Initialize events
+            useEffect(() => {
+                const formattedEvents = mockEvents.map(event => ({
+                    id: event.Id,
+                    title: event.Name,
+                    start: event.Start_Date__c,
+                    end: event.End_Date__c,
+                    backgroundColor: enrollments.some(enr => enr.npcpm__Program__c === event.Id) ? '#10B981' : '#3B82F6',
+                    borderColor: enrollments.some(enr => enr.npcpm__Program__c === event.Id) ? '#10B981' : '#3B82F6'
+                }));
+                setEvents(formattedEvents);
+            }, [enrollments]);
+            // Initialize FullCalendar
+            useEffect(() => {
+                if (calendarRef.current) {
+                    const calendar = new FullCalendar.Calendar(calendarRef.current, {
+                        initialView: 'dayGridMonth',
+                        events: events,
+                        eventClick: handleEventClick,
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: ''
+                        },
+                        height: 'auto'
+                    });
+                    calendar.render();
+                    return () => calendar.destroy();
+                }
+            }, [events]);
+            // Handle profile update
+            const handleProfileUpdate = (e) => {
+                e.preventDefault();
+                alert('Profile updated successfully!\n' + JSON.stringify(profile, null, 2));
+            };
+            // Handle event click
+            const handleEventClick = (info) => {
+                setSelectedEvent({ id: info.event.id, title: info.event.title });
+                setModalOpen(true);
+            };
+            // Handle registration
+            const handleRegister = (eventId, notes) => {
+                setEnrollments([
+                    ...enrollments,
+                    {
+                        Id: `enr${Date.now()}`,
+                        npcpm__Contact__c: mockProfile.Id,
+                        npcpm__Program__c: eventId,
+                        npcpm__Status__c: 'Active',
+                        Notes__c: notes
+                    }
+                ]);
+                alert('Registered successfully!');
+                setModalOpen(false);
+            };
+            // Handle cancellation
+            const handleCancel = (eventId) => {
+                setEnrollments(enrollments.filter(enr => enr.npcpm__Program__c !== eventId));
+                alert('Registration cancelled!');
+                setModalOpen(false);
+            };
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    <header className="bg-white shadow">
+                        <div className="max-w-7xl mx-auto py-6 px-4 flex items-center justify-start">
+                            <img className="w-[200px] h-auto mr-4" src=" /images/logo.png"></img>
+                            <div className="text-2xl font-semibold text-sky-900">Volunteer Portal</div>
+                        </div>
+                    </header >
+                    <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 bckgrnd">
+                        {/* Profile Section */}
+                        <div className="bg-white shadow rounded-lg p-6 mb-8">
+                            <h2 className="text-2xl font-semibold text-sky-900 mb-4">Your Profile</h2>
+                            <form onSubmit={handleProfileUpdate}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="name" className="block text-sm font-medium text-sky-700">Name</label>
+                                        <input
+                                            id="name"
+                                            type="text"
+                                            value={profile.name}
+                                            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="email" className="block text-sm font-medium text-sky-900">Email</label>
+                                        <input
+                                            id="email"
+                                            type="email"
+                                            value={profile.email}
+                                            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="skills" className="block text-sm font-medium text-sky-900">Skills</label>
+                                        <select
+                                            id="skills"
+                                            multiple
+                                            value={profile.skills}
+                                            onChange={(e) => setProfile({ ...profile, skills: Array.from(e.target.selectedOptions, opt => opt.value) })}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                            size="4"
+                                        >
+                                            <option value="Admin">Admin</option>
+                                            <option value="Outreach">Outreach</option>
+                                            <option value="Tech">Tech</option>
+                                            <option value="Training">Training</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label htmlFor="availability" className="block text-sm font-medium text-sky-900">Availability</label>
+                                        <select
+                                            id="availability"
+                                            value={profile.availability}
+                                            onChange={(e) => setProfile({ ...profile, availability: e.target.value })}
+                                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                        >
+                                            <option value="Weekdays">Weekdays</option>
+                                            <option value="Weekends">Weekends</option>
+                                            <option value="Evenings">Evenings</option>
+                                            <option value="Flexible">Flexible</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="mt-6">
+                                    <button
+                                        type="submit"
+                                        className="w-full md:w-auto bg-sky-900 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        {/* Calendar Section */}
+                        <div className="bg-white shadow rounded-lg p-6">
+                            <h2 className="text-2xl font-semibold text-sky-800 mb-4" class="titletext">Volunteer Events</h2>
+                            <div ref={calendarRef} className="fc fc-media-screen fc-direction-ltr"></div>
+                        </div>
+                        {/* Modal */}
+                        <Modal
+                            isOpen={modalOpen}
+                            onClose={() => setModalOpen(false)}
+                            event={selectedEvent}
+                            isRegistered={enrollments.some(enr => enr.npcpm__Program__c === selectedEvent?.id)}
+                            onRegister={handleRegister}
+                            onCancel={handleCancel}
+                        />
+                    </main>
+                </div >
+            );
+        }
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<VolunteerPortal />);
+    </script>
